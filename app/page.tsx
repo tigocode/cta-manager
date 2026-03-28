@@ -140,6 +140,15 @@ const scenes: AppScene[] = [
 export default function App() {
   const [activeTab, setActiveTab] = useState<'storyboard' | 'gallery'>('storyboard');
   const [selectedImage, setSelectedImage] = useState<AppScreen | null>(null);
+  
+  // Bloquear scroll do corpo quando a imagem estiver ampliada
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [selectedImage]);
 
   const handleImageClick = (item: AppScreen | AppScene) => {
     // Adapter to ensure AppScreen interface is met
@@ -157,26 +166,26 @@ export default function App() {
       
       {/* Header & Tabs */}
       <div className="w-full max-w-6xl mb-8 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div>
-          <h1 className="text-2xl md:text-4xl font-bold text-white flex items-center gap-3">
+        <div className="text-center md:text-left">
+          <h1 className="text-2xl md:text-4xl font-bold text-white flex items-center justify-center md:justify-start gap-3">
             <Sun className="text-yellow-400 w-8 h-8 md:w-10 md:h-10" />
             Solar Manager
           </h1>
           <p className="text-emerald-400 text-sm md:text-base font-medium mt-1">Apresentação de Telas e Storyboard</p>
         </div>
         
-        <div className="flex bg-slate-900 p-1.5 rounded-xl border border-slate-800 shadow-xl">
+        <div className="flex bg-slate-900 p-1.5 rounded-xl border border-slate-800 shadow-xl w-full md:w-auto">
           <button 
             onClick={() => setActiveTab('storyboard')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'storyboard' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+            className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'storyboard' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
           >
             <Film size={18} /> Storyboard do Vídeo
           </button>
           <button 
             onClick={() => setActiveTab('gallery')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'gallery' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+            className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'gallery' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
           >
-            <Grid size={18} /> Galeria Completa ({allScreens.length} Telas)
+            <Grid size={18} /> Galeria Completa ({allScreens.length})
           </button>
         </div>
       </div>
@@ -193,10 +202,10 @@ export default function App() {
 
       {/* Image Modal (Zoom) */}
       {selectedImage && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4">
           <button 
             onClick={() => setSelectedImage(null)}
-            className="absolute top-6 right-6 p-2 bg-slate-800 hover:bg-red-600 text-white rounded-full transition-colors z-50"
+            className="fixed top-6 right-6 p-2 bg-slate-800 hover:bg-red-600 text-white rounded-full transition-colors z-[60]"
           >
             <X size={24} />
           </button>
@@ -206,7 +215,7 @@ export default function App() {
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-slate-700"
             onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x600?text=Erro+ao+carregar+imagem'; }}
           />
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
             <div className="bg-slate-900/80 px-6 py-2 rounded-full border border-slate-700 text-white font-medium text-sm backdrop-blur-md">
               {selectedImage.title}
             </div>
@@ -278,9 +287,9 @@ function StoryboardView({ onImageClick, onComplete }: { onImageClick: (item: App
     <div className="w-full max-w-6xl flex flex-col gap-4 animate-in fade-in duration-500">
       
       {/* Player Controls Header */}
-      <div className="flex justify-between items-center bg-slate-900 p-4 rounded-xl border border-slate-800">
-        <div className="flex items-center gap-6">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center bg-slate-900 p-4 rounded-xl border border-slate-800 gap-4">
+        <div className="flex items-center justify-between sm:justify-start gap-6">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2 text-nowrap">
             <MonitorPlay className="text-blue-400" size={20}/> Modo Player
           </h2>
           
@@ -296,7 +305,7 @@ function StoryboardView({ onImageClick, onComplete }: { onImageClick: (item: App
 
         <button 
           onClick={() => setIsPlaying(!isPlaying)}
-          className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-semibold text-sm ${isPlaying ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
+          className={`px-4 py-2 rounded-lg transition-all flex items-center justify-center gap-2 font-semibold text-sm ${isPlaying ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
         >
           {isPlaying ? <Pause size={18} /> : <Play size={18} />}
           {isPlaying ? 'Pausar Cena' : 'Reproduzir Vídeo'}
@@ -305,7 +314,7 @@ function StoryboardView({ onImageClick, onComplete }: { onImageClick: (item: App
 
       <div className="w-full bg-slate-900 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl flex flex-col md:flex-row h-auto md:h-[500px]">
         {/* Visual Preview Area */}
-        <div className={`w-full md:w-3/5 relative flex flex-col items-center justify-center p-8 transition-colors duration-1000 ${scene.bgClass}`}>
+        <div className={`w-full md:w-3/5 relative flex flex-col items-center justify-center p-4 sm:p-12 transition-all duration-700 ${scene.bgClass}`}>
           
           <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-mono text-yellow-400 border border-yellow-400/30">
             {scene.time}
@@ -380,7 +389,7 @@ function StoryboardView({ onImageClick, onComplete }: { onImageClick: (item: App
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between items-center mt-2">
+      <div className="flex justify-between items-center mt-2 px-2">
         <button onClick={() => setCurrentSceneIndex(p => Math.max(0, p - 1))} disabled={currentSceneIndex === 0} className="p-3 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 rounded-full text-white transition-colors flex items-center gap-2">
           <ChevronLeft size={20} /> <span className="hidden sm:inline text-sm">Anterior</span>
         </button>
@@ -400,7 +409,7 @@ function StoryboardView({ onImageClick, onComplete }: { onImageClick: (item: App
           className="p-3 bg-blue-600 hover:bg-blue-500 rounded-full text-white transition-colors flex items-center gap-2 px-6"
         >
            <span className="text-sm font-bold">
-             {currentSceneIndex === scenes.length - 1 ? 'Explorar Galeria Completa' : 'Próxima'}
+             {currentSceneIndex === scenes.length - 1 ? 'Galeria Completa' : 'Próxima'}
            </span> 
            <ChevronRight size={20} />
         </button>
@@ -428,7 +437,7 @@ function GalleryView({ onImageClick }: { onImageClick: (screen: AppScreen) => vo
             {cat}
           </h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {allScreens.filter(s => s.cat === cat).map(screen => (
               <div 
                 key={screen.path} 
