@@ -204,7 +204,7 @@ export default function App() {
             src={getImageUrl(selectedImage.path)} 
             alt={selectedImage.title}
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-slate-700"
-            onError={(e) => { e.target.src = 'https://via.placeholder.com/800x600?text=Erro+ao+carregar+imagem'; }}
+            onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x600?text=Erro+ao+carregar+imagem'; }}
           />
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
             <div className="bg-slate-900/80 px-6 py-2 rounded-full border border-slate-700 text-white font-medium text-sm backdrop-blur-md">
@@ -324,7 +324,13 @@ function StoryboardView({ onImageClick, onComplete }: { onImageClick: (item: App
                 src={getImageUrl(scene.path)} 
                 alt={scene.title} 
                 className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                onError={(e) => { 
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none'; 
+                if (target.nextSibling instanceof HTMLElement) {
+                  target.nextSibling.style.display = 'flex';
+                }
+              }}
               />
               <div className="hidden absolute inset-0 flex-col items-center justify-center text-slate-500 p-4 text-center">
                 <ImageIcon size={32} className="mb-2" />
@@ -434,7 +440,7 @@ function GalleryView({ onImageClick }: { onImageClick: (screen: AppScreen) => vo
                     src={getImageUrl(screen.path)} 
                     alt={screen.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-100"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400x225?text=Erro+Carregamento'; }}
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x225?text=Erro+Carregamento'; }}
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <ZoomIn className="text-white w-8 h-8 drop-shadow-md" />
